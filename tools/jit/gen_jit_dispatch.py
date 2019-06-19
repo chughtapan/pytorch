@@ -171,7 +171,7 @@ Operator(
 """)
 
 
-blacklisted_types = {'Storage', 'DimnameList?', 'ConstQuantizerPtr'}
+blacklisted_types = {'Storage', 'DimnameList?', 'ConstQuantizerPtr', 'void*', 'std::function<void(void*)>'}
 default_only_types = {'Generator'}
 
 
