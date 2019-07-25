@@ -30,10 +30,10 @@
 namespace torch {
 namespace jit {
 
-void packGradient(const Gradient& gradient, Node* dnode);
-bool needsGradient(const std::shared_ptr<const Graph>& graph);
-void runOptimization(std::shared_ptr<Graph>& graph);
-void runNondiffOptimization(std::shared_ptr<Graph>& graph);
+TORCH_API void packGradient(const Gradient& gradient, Node* dnode);
+TORCH_API bool needsGradient(const std::shared_ptr<const Graph>& graph);
+TORCH_API void runOptimization(std::shared_ptr<Graph>& graph);
+TORCH_API void runNondiffOptimization(std::shared_ptr<Graph>& graph);
 void debugSetAutodiffSubgraphInlining(bool state);
 bool getAutodiffSubgraphInlining();
 
