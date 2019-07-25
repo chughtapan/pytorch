@@ -1,6 +1,6 @@
-#include <torch/csrc/jit/symbolic_script.h>
 #include <torch/csrc/jit/operator.h>
 #include <torch/csrc/jit/script/compiler.h>
+#include <torch/csrc/jit/symbolic_script.h>
 
 namespace torch {
 namespace jit {
@@ -1137,6 +1137,31 @@ const std::vector<std::string> functions = {
             p1r = 1. / p1m
             grad_input = grad * (mask.type_as(grad) * p1r)
             return grad_input
+
+        def _convolution(input, weight,
+                         bias: Optional[Tensor],
+                         stride: List[int],
+                         padding: List[int],
+                         dilation: List[int],
+                         transposed: bool,
+                         output_padding: List[int],
+                         groups: int,
+                         benchmark: bool,
+                         deterministic: bool,
+                         cudnn_enabled: bool):
+            has_bias = bias is not None
+            output, save1, save2, impl_idx = torch._convolution_impl_index(input, weight, bias, stride,
+                    padding, dilation, transposed, output_padding, groups, benchmark, deterministic,
+                    cudnn_enabled)
+
+            def backward(grad_output):
+                grad_input, grad_weight, grad_bias = torch._convolution_impl_index_backward(
+                        impl_idx, input, grad_output, weight, stride, padding, dilation,
+                        output_padding, transposed, groups, benchmark, deterministic,
+                        [True, True, has_bias], save1, save2)
+                return grad_input, grad_weight, grad_bias, None, None, None, None, None, None, None, None, None
+
+            return output, backward
 
         def dropout(input,
                     p: float,
