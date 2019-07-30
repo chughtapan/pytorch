@@ -41,9 +41,8 @@ std::shared_ptr<Graph> ProfilingGraphExecutorImpl::prepareGraph(
 }
 
 ProfilingGraphExecutorImpl::ProfilingGraphExecutorImpl(
-    const std::shared_ptr<Graph>& graph,
-    bool optimize)
-    : GraphExecutorImplBase(graph, optimize), arg_spec_creator_(*this->graph) {}
+    const std::shared_ptr<Graph>& graph)
+    : GraphExecutorImplBase(graph), arg_spec_creator_(*this->graph) {}
 
 ExecutionPlan ProfilingGraphExecutorImpl::getPlanFor(Stack& stack) {
   if (optimized_plan_) {
@@ -82,8 +81,8 @@ GraphExecutorState ProfilingGraphExecutorImpl::getDebugState() {
 
 RegisterGraphExecutorImpl reg_profiling_graph_executor_impl(
     Symbol::fromQualString("executor::profiling"),
-    [](const std::shared_ptr<Graph>& graph, bool optimize) {
-      return new ProfilingGraphExecutorImpl(graph, optimize);
+    [](const std::shared_ptr<Graph>& graph) {
+      return new ProfilingGraphExecutorImpl(graph);
     });
 
 } // namespace jit

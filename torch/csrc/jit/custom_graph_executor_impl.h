@@ -8,7 +8,7 @@ namespace torch {
 namespace jit {
 
 using GraphExecutorImplCreator =
-    std::function<GraphExecutorImplBase*(std::shared_ptr<Graph>, bool)>;
+    std::function<GraphExecutorImplBase*(std::shared_ptr<Graph>)>;
 
 TORCH_API extern const Symbol kDefaultExecutor;
 

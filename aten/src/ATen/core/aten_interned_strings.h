@@ -199,6 +199,7 @@ _(aten, arange) \
 _(aten, argmax) \
 _(aten, argmin) \
 _(aten, as_strided) \
+_(aten, as_tensor) \
 _(aten, asin) \
 _(aten, atan) \
 _(aten, atan2) \
@@ -526,7 +527,6 @@ _(aten, pow) \
 _(aten, prelu) \
 _(aten, prelu_backward) \
 _(aten, prod) \
-_(aten, pstrf) \
 _(aten, put) \
 _(aten, qr) \
 _(aten, rand) \
@@ -766,6 +766,7 @@ _(attr, dimension) \
 _(attr, dims) \
 _(attr, dims_other) \
 _(attr, dims_self) \
+_(attr, divisor_override) \
 _(attr, dropout) \
 _(attr, dropout_seed) \
 _(attr, dropout_state) \
