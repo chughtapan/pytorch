@@ -1,3 +1,4 @@
+#include <torch/csrc/jit/custom_graph_executor_impl.h>
 #include <torch/csrc/jit/passes/bailout_graph.h>
 #include <torch/csrc/jit/passes/canonicalize_ops.h>
 #include <torch/csrc/jit/passes/constant_propagation.h>
@@ -93,10 +94,15 @@ ExecutionPlan ProfilingGraphExecutorImpl::getPlanFor(Stack& stack) {
   return *optimized_plan_;
 }
 
-
 GraphExecutorState ProfilingGraphExecutorImpl::getDebugState() {
   AT_ERROR("not supported");
 }
+
+RegisterGraphExecutorImpl reg_profiling_graph_executor_impl(
+    Symbol::fromQualString("executor::profiling"),
+    [](const std::shared_ptr<Graph>& graph) {
+      return new ProfilingGraphExecutorImpl(graph);
+    });
 
 } // namespace jit
 } // namespace torch

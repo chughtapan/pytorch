@@ -3,6 +3,7 @@
 
 #include <torch/csrc/jit/argument_spec.h>
 #include <torch/csrc/jit/autodiff.h>
+#include <torch/csrc/jit/custom_graph_executor_impl.h>
 #include <torch/csrc/jit/export.h>
 #include <torch/csrc/jit/fuser/interface.h>
 #include <torch/csrc/jit/fuser/kernel_cache.h>
@@ -309,8 +310,13 @@ void initJITBindings(PyObject* module) {
             checkAliasAnnotation(g, std::move(stack), unqualified_op_name);
           })
       .def(
-          "_jit_set_profiling_mode",
-          [](bool profiling_flag) { getProfilingMode() = profiling_flag; })
+          "_jit_set_graph_executor",
+          [](const std::string& name) {
+            setGraphExecutorName(Symbol::fromQualString(name));
+          })
+      .def(
+          "_jit_reset_graph_executor",
+          []() { setGraphExecutorName(kDefaultExecutor); })
       .def(
           "_jit_set_inline_everything_mode",
           [](bool enabled) { script::getInlineEverythingMode() = enabled; })

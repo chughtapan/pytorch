@@ -5,6 +5,7 @@
 #include <torch/csrc/autograd/grad_mode.h>
 #include <torch/csrc/jit/argument_spec.h>
 #include <torch/csrc/jit/autodiff.h>
+#include <torch/csrc/jit/custom_graph_executor_impl.h>
 #include <torch/csrc/jit/custom_operator.h>
 #include <torch/csrc/jit/graph_executor_impl.h>
 #include <torch/csrc/jit/interpreter.h>
@@ -619,30 +620,29 @@ struct GraphExecutorImpl : public GraphExecutorImplBase {
   std::unordered_map<ArgumentSpec, ExecutionPlan> plan_cache;
 };
 
+RegisterGraphExecutorImpl
+    reg_graph_executor_impl(kDefaultExecutor,
+                            [](const std::shared_ptr<Graph> &graph) {
+                              return new GraphExecutorImpl(graph);
+                            });
+
 GraphExecutor::GraphExecutor(std::shared_ptr<Graph> graph)
-    : pImpl(
-          getProfilingMode() ? dynamic_cast<GraphExecutorImplBase*>(
-                                   new ProfilingGraphExecutorImpl(graph))
-                             : dynamic_cast<GraphExecutorImplBase*>(
-                                   new GraphExecutorImpl(graph))) {}
+    : pImpl(dynamic_cast<GraphExecutorImplBase *>(
+          getGraphExecutorImpl()(std::move(graph)))) {}
 
-void GraphExecutor::run(Stack& inputs) {
-  return pImpl->run(inputs);
-}
+void GraphExecutor::run(Stack &inputs) { return pImpl->run(inputs); }
 
-ExecutionPlan GraphExecutor::getPlanFor(Stack& inputs) {
+ExecutionPlan GraphExecutor::getPlanFor(Stack &inputs) {
   return pImpl->getPlanFor(inputs);
 }
 
-std::shared_ptr<Graph> GraphExecutor::graph() const {
-  return pImpl->graph;
-}
+std::shared_ptr<Graph> GraphExecutor::graph() const { return pImpl->graph; }
 
 GraphExecutorState GraphExecutor::getDebugState() {
   return pImpl->getDebugState();
 }
 
-void runRequiredPasses(const std::shared_ptr<Graph>& g) {
+void runRequiredPasses(const std::shared_ptr<Graph> &g) {
   LowerGradOf(*g);
   // implicit inserted expand nodes are not necessarily always valid
   // when used inside script methods that might have unstable shapes
